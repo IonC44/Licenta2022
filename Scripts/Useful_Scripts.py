@@ -52,8 +52,6 @@ def save_images(train_images, train_labels,categories, scope, path, division = 2
                                     224, 224, 3), dtype='float32')
         for l in range(min((i+1)*batch_size,size-1)-i*batch_size):
             rgb_images[l, :, :, :] = tf.image.grayscale_to_rgb(tf.convert_to_tensor(images[l, :, :, :])).numpy()
-            rgb_images[l, :, :, :] = rgb_images[l, :, :, :]/255.0
-            rgb_images[l, :, :, :] = tf.image.per_image_standardization(rgb_images[l, :, :, :])
         rgb_images_trunc = np.floor(rgb_images)
         for k in range(len(categories)):
                 a = rgb_images_trunc[train_labels[i*batch_size:min((i+1)*batch_size,

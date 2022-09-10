@@ -79,7 +79,9 @@ else:
 
 
 train_data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
-    rescale=None,
+    rescale=1/255,
+    featurewise_center = True,
+    featurewise_std_normalization = True,
     rotation_range=0,
     width_shift_range=0,
     height_shift_range=0,
@@ -98,7 +100,10 @@ train_generator = train_data_gen.flow_from_directory(
     batch_size=64,
 )
 
-valid_data_gen = tf.keras.preprocessing.image.ImageDataGenerator()
+valid_data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
+    rescale=1/255,
+    featurewise_center = True,
+    featurewise_std_normalization = True)
 
 
 valid_generator = train_data_gen.flow_from_directory(
