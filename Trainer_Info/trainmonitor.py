@@ -58,8 +58,8 @@ class TrainMonitor(BaseLogger):
             plt.figure()
             plt.plot(N, self.his["loss"], label="training_loss")
             plt.plot(N, self.his["val_loss"], label="validation_loss")
-            plt.plot(N, self.his["accuracy"], label="training_accuracy")
-            plt.plot(N, self.his["val_accuracy"], label="valid_accuracy")
+            plt.plot(N, self.his["categorical_accuracy"], label="training_accuracy")
+            plt.plot(N, self.his["val_categorical_accuracy"], label="valid_accuracy")
             plt.title("Training Loss and Accuracy [Epoch {}]".format(
 				len(self.his["loss"])))
             plt.xlabel("Epoch #")
