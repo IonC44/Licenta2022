@@ -21,29 +21,32 @@ args = vars(ap.parse_args())
 from Scripts.Useful_Scripts import *
 #exec(open(os.path.sep.join([args["projectpath"], "Scripts/Useful_Scripts.py"])).read())
 
-categories = ['Anger', 'Fear','Disgust', 'Happiness', 'Sadness', 'Surprise', 'Neutral','Unknown']
+categories = ['Anger', 'Fear', 'Happiness', 'Sadness', 'Surprise', 'Neutral']
 
 if not os.path.isdir(os.path.sep.join([args["outputpath"],'Data_Images'])):
-
-
-
 
     os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images']))
     os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training']))
     os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training/Anger']))
-    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training/Disgust']))
     os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training/Fear']))
     os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training/Happiness']))
     os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training/Sadness']))
     os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training/Surprise']))
     os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training/Neutral']))
-    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Training/Unkown']))
+    
+    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Validation']))
+    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Validation/Anger']))
+    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Validation/Fear']))
+    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Validation/Happiness']))
+    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Validation/Sadness']))
+    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Validation/Surprise']))
+    os.mkdir(os.path.sep.join([args["outputpath"],'Data_Images/Validation/Neutral']))
 
-train_images, train_labels = csv_to_list_fer_plus(os.path.sep.join([args["datapath"],"data_train.csv"]), 
-                                                  label_path = "/home/ionc4/FERPlus/data/FER2013Train/label.csv",
+    train_images, train_labels = csv_to_list(os.path.sep.join([args["datapath"],"data_train.csv"]), 
                                                   num_categ = len(categories))
-    
-save_images(train_images, train_labels,categories=categories,scope = "Training", path = args["outputpath"])
+    save_images(train_images, train_labels,categories=categories,scope = "Training", path = args["outputpath"])
    
-    
+    train_images, train_labels = csv_to_list(os.path.sep.join([args["datapath"],"data_val.csv"]), 
+                                                  num_categ = len(categories))
+    save_images(train_images, train_labels,categories=categories,scope = "Validation", path = args["outputpath"])
 
