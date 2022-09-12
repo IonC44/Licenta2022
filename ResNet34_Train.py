@@ -99,9 +99,9 @@ else:
 
 
 train_data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
-    rescale=None,
-    featurewise_center = True,
-    featurewise_std_normalization = True,
+    rescale=1/255,
+    samplewise_center = True,
+    samplewise_std_normalization = True,
     rotation_range=config['rotation_range'],
     width_shift_range=config['width_shift_range'],
     height_shift_range=config['height_shift_range'],
@@ -120,9 +120,9 @@ train_generator = train_data_gen.flow_from_directory(
 )
 
 valid_data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
-    rescale=None,
-    featurewise_center = True,
-    featurewise_std_normalization = True)
+    rescale=1/255,
+    samplewise_center = True,
+    samplewise_std_normalization = True)
 
 
 valid_generator = train_data_gen.flow_from_directory(
@@ -145,10 +145,10 @@ model.compile(optimizer=opt, loss='categorical_crossentropy',
 callback1 = tf.keras.callbacks.EarlyStopping(monitor='val_categorical_accuracy', 
                                              patience=config['patience'],
                                              restore_best_weights=True)
-callback2 = EpochCallback(args["outputmodel"], each = 10, start_at = args["startepoch"])
+callback2 = EpochCallback(args["outputmodel"], each = 10, start_at = int(args["startepoch"]))
 callback3 = TrainMonitor(os.path.sep.join([args["outputmodel"], 'Train_History']),
                           os.path.sep.join([args["outputmodel"], 'Train_History']), 
-                          start_at = args["startepoch"])
+                          start_at = int(args["startepoch"]))
 #callback4 = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
 
