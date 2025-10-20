@@ -11,7 +11,7 @@ import argparse
 import os
 from Scripts.Useful_Scripts import *
 from Model import resNet
-from Trainer_Info.trainmonitor import TrainMonitor
+# from Trainer_Info.trainmonitor import TrainMonitor
 
 # Constants
 CATEGORIES = ['Anger', 'Disgust', 'Fear', 'Happiness', 'Sadness', 'Surprise', 'Neutral']
