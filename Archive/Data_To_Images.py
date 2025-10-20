@@ -8,6 +8,9 @@ Created on Sun Sep  4 13:01:45 2022
 import argparse
 import os
 from PIL import Image
+from Scripts.Useful_Scripts import *
+
+# Add arguments for the script
 ap = argparse.ArgumentParser()
 
 ap.add_argument("-dp", "--datapath", required = True,
@@ -17,9 +20,6 @@ ap.add_argument("-pp", "--projectpath", required = True,
 ap.add_argument("-op", "--outputpath", required = True,
                  help = "path to output folder")
 args = vars(ap.parse_args())
-
-from Scripts.Useful_Scripts import *
-#exec(open(os.path.sep.join([args["projectpath"], "Scripts/Useful_Scripts.py"])).read())
 
 categories = ['Anger', 'Fear', 'Happiness', 'Sadness', 'Surprise', 'Neutral']
 

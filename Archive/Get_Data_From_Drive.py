@@ -4,10 +4,6 @@
 Created on Sun Sep  4 11:43:04 2022
 
 @author: ionc4
-
-MIT License
-
-Copyright (c) 2021 Bodhis4ttva
 """
 
 

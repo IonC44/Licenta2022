@@ -9,35 +9,17 @@ import tensorflow as tf
 import csv
 from PIL import Image
 import numpy as np
-
 import gc
 
-def csv_to_list(file_name,num_categ):
-    data = open(file_name)
-    read = csv.reader(data, delimiter=';')
-    next(read)
-    data = []
-    for row in read:
-        item = [row[0], row[2:]]
-        data.append(item)
-    images = np.zeros((len(data), 48, 48, 1), dtype='float32')
-    labels = np.zeros((len(data)), dtype='float32')
-    labels_binarized = np.zeros(shape=(len(data), num_categ), dtype='float32')
-    for i in range(len(data)):
-        images[i, :, :, :] = np.array(data[i][1]).reshape((48, 48, 1))
-        if int(data[i][0]) == 1:
-            data[i][0] == 0
-        if int(data[i][0]) > 0:
-            data[i][0] = int(data[i][0]) - 1
-        labels[i] = np.array(data[i][0]).astype('float32')
-        labels_binarized[i, int(labels[i])] = 1
-    return images, labels_binarized
+def parse_csv_line(line):
+    fields = tf.strings.split(line, sep=';')
 
+    labels = tf.strings.to_number(fields[0], tf.int32)
+    
+    pixels = tf.strings.to_number(fields[2:], tf.float32)
+    image = tf.reshape(pixels, (48, 48, 1))
 
-
-
-
-
+    return image, labels
 
 def save_images(train_images, train_labels,categories, scope, path, division = 20):
     division = 20
@@ -46,10 +28,9 @@ def save_images(train_images, train_labels,categories, scope, path, division = 2
     it_imag = 0
     it_categ = [0]*len(categories)
     for i in range(division): 
-        images = tf.image.resize(images=train_images[i*batch_size:min((i+1)*batch_size,size-1),:,:,:], 
+        images = tf.image.resize(images=train_images[i * batch_size:min( (i+1) * batch_size, size - 1),:,:,:], 
                                  size=(224, 224), method='bilinear').numpy()
-        rgb_images = np.zeros(shape=(min((i+1)*batch_size,size-1)-i*batch_size, 
-                                    224, 224, 3), dtype='float32')
+        rgb_images = np.zeros(shape=(min((i+1)*batch_size,size-1)-i*batch_size, 224, 224, 3), dtype='float32')
         for l in range(min((i+1)*batch_size,size-1)-i*batch_size):
             rgb_images[l, :, :, :] = tf.image.grayscale_to_rgb(tf.convert_to_tensor(images[l, :, :, :])).numpy()
         rgb_images_trunc = np.floor(rgb_images)
