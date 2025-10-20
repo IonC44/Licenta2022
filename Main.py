@@ -5,13 +5,8 @@ Created on Sun Sep  4 14:10:35 2022
 @author: ion.ceparu
 """
 
-
-import json
-with open('Config/Config.json') as json_file:
-    config = json.load(json_file)
-
 # IMPORTS
-import random
+import json
 import argparse
 import os
 from Scripts.Useful_Scripts import *
@@ -30,6 +25,9 @@ ap.add_argument("-pp", "--projectpath", required = True, help = "path to project
 ap.add_argument("-o", "--outputmodel", required = True, help = "path to model output")
 ap.add_argument("-m", "--model", type = str, help = "path to model checkpoint")
 args = vars(ap.parse_args())
+
+with open(os.path.sep.join([args["projectpath"],'Config/Config.json'])) as json_file:
+    config = json.load(json_file)
 
 # DATA LOADING
 columns = [i for i in range(2049) if i != 1]
