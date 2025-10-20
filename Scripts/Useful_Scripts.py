@@ -17,7 +17,11 @@ def parse_csv_line(line):
     labels = tf.strings.to_number(fields[0], tf.int32)
     
     pixels = tf.strings.to_number(fields[2:], tf.float32)
+    
     image = tf.reshape(pixels, (48, 48, 1))
+    mean, variance = tf.nn.moments(image, [0, 1])
+    epsilon = 1e-8
+    image = (image - mean) / (tf.sqrt(variance) + epsilon)
 
     return image, labels
 

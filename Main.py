@@ -11,11 +11,12 @@ import argparse
 import os
 from Scripts.Useful_Scripts import *
 from Model import resNet
-# from Trainer_Info.trainmonitor import TrainMonitor
+from Trainer_Info.trainmonitor import TrainMonitor
+from tensorflow.keras.callbacks import EarlyStopping
 
 # Constants
 CATEGORIES = ['Anger', 'Disgust', 'Fear', 'Happiness', 'Sadness', 'Surprise', 'Neutral']
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 
 # ARGUMENT PARSER
 ap = argparse.ArgumentParser()
@@ -30,19 +31,20 @@ with open(os.path.sep.join([args["projectpath"],'Config/Config.json'])) as json_
     config = json.load(json_file)
 
 # DATA LOADING
-columns = [i for i in range(2049) if i != 1]
-
-train_dataset = tf.data.TextLineDataset(os.path.sep.join([args["datapath"], "data_test.csv"])) \
+train_dataset = tf.data.TextLineDataset(os.path.sep.join([args["datapath"], "data_train.csv"])) \
     .skip(1) \
     .map(parse_csv_line, num_parallel_calls=tf.data.AUTOTUNE) \
     .batch(BATCH_SIZE) \
-    .prefetch(tf.data.AUTOTUNE)
+    .prefetch(tf.data.AUTOTUNE) \
+    .repeat()
 
 validation_dataset = tf.data.TextLineDataset(os.path.sep.join([args["datapath"], "data_val.csv"])) \
     .skip(1) \
     .map(parse_csv_line, num_parallel_calls=tf.data.AUTOTUNE) \
     .batch(BATCH_SIZE) \
     .prefetch(tf.data.AUTOTUNE)
+
+print(train_dataset.element_spec[0].shape)
 
 # PREPROCCESING
 # train_data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
@@ -56,6 +58,7 @@ validation_dataset = tf.data.TextLineDataset(os.path.sep.join([args["datapath"],
 #     horizontal_flip=config['horizontal_flip'],
 # )
 
+# train_data_gen.fit(train_dataset)
 
 # train_generator = train_data_gen.flow_from_directory(
 #     directory=path_train,
@@ -83,7 +86,7 @@ validation_dataset = tf.data.TextLineDataset(os.path.sep.join([args["datapath"],
 
 # # LOAD_MODEL
 if args["model"] is None:
-  model = resNet(train_dataset.element_spec[0].shape[1:], 2, num_classes=len(CATEGORIES))
+  model = resNet(input_shape=train_dataset.element_spec[0].shape[1:], depth=3, num_classes=len(CATEGORIES))
 else:
   model = tf.keras.models.load_model(args["model"])
 
@@ -99,21 +102,30 @@ elif config['optimizer'] == "SGD":
 else:
     raise ValueError("No optimizer found!")
 
-
-
-
 model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics=['SparseCategoricalCrossentropy'])
 
-# callback = TrainMonitor(os.path.sep.join([args["outputmodel"], 'Train_History']),
-#                           os.path.sep.join([args["outputmodel"], 'Train_History']), 
-#                         )
+train_history = TrainMonitor(os.path.sep.join([args["outputmodel"], 'Train_History'])) 
+
+early_stopping = tf.keras.callbacks.EarlyStopping(
+    monitor='val_loss',
+    patience=10,
+    verbose=1,
+    baseline=None,
+    restore_best_weights=True
+)
+
+
+
+                        
+steps_per_epoch = 28709 // BATCH_SIZE 
 
 history = model.fit(
     x=train_dataset,
-    epochs=300,
+    epochs=100,
     verbose=1,
-    # callbacks=[callback],
-    validation_data=validation_dataset
+    callbacks=[train_history, early_stopping],
+    validation_data=validation_dataset,
+    steps_per_epoch=steps_per_epoch
 )
 np.save(os.path.sep.join([args["outputmodel"], 'history.npy']),history.history)
 
